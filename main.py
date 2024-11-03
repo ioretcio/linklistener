@@ -7,12 +7,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 API_TOKEN = os.getenv('API_TOKEN')
-
+GOOGLE_CREDS=os.getenv('GOOGLE_CREDS')
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
 db_manager = DatabaseManager()
-sheets_exporter = GoogleSheetsExporter()
+sheets_exporter = GoogleSheetsExporter(GOOGLE_CREDS)
 
 @dp.chat_join_request_handler()
 async def on_join_request(join_request: types.ChatJoinRequest):
