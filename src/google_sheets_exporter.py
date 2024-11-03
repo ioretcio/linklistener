@@ -2,10 +2,9 @@ import httplib2
 import apiclient.discovery
 from oauth2client.service_account import ServiceAccountCredentials
 
-CREDENTIALS_FILE = 'path_to_your_credentials.json'
 
 class GoogleSheetsExporter:
-    def __init__(self, creds_file):
+    def __init__(self, CREDENTIALS_FILE):
         credentials = ServiceAccountCredentials.from_json_keyfile_name(
             CREDENTIALS_FILE,
             ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']

@@ -1,7 +1,7 @@
 from aiogram import Bot, Dispatcher, types
 from aiogram.utils import executor
-from database import DatabaseManager
-from google_sheets_exporter import GoogleSheetsExporter
+from src.database import DatabaseManager
+from src.google_sheets_exporter import GoogleSheetsExporter
 import os
 from dotenv import load_dotenv
 
