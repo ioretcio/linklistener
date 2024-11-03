@@ -1,4 +1,11 @@
 import sqlite3
+from datetime import datetime
+
+class DatabaseManager:
+    def __init__(self, db_path='invite_stats.db'):
+        self.conn = sqlite3.connect(db_path)
+        self.cursor = self.conn.cursor()
+        self._create_tables()
 
 class DatabaseManager:
     def __init__(self, db_path='invite_stats.db'):
@@ -13,7 +20,9 @@ class DatabaseManager:
             user_id INTEGER,
             username TEXT,
             name TEXT,
-            channel TEXT
+            phone_number TEXT,
+            channel TEXT,
+            time TEXT  -- New column to store the timestamp
         )
         ''')
         self.cursor.execute('''
@@ -26,11 +35,12 @@ class DatabaseManager:
         ''')
         self.conn.commit()
 
-    def save_invite(self, invite_link, user_id, username, name, channel):
+    def save_invite(self, invite_link, user_id, username, name, phone_number, channel):
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.cursor.execute('''
-        INSERT INTO invite_stats (invite_link, user_id, username, name, channel)
-        VALUES (?, ?, ?, ?, ?)
-        ''', (invite_link, user_id, username, name, channel))
+        INSERT INTO invite_stats (invite_link, user_id, username, name, phone_number, channel, time)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (invite_link, user_id, username, name, phone_number, channel, current_time))
         self.conn.commit()
 
     def get_invite_stats(self):
@@ -48,5 +58,10 @@ class DatabaseManager:
         self.cursor.execute('SELECT channel, invite_link, spreadsheet_id FROM channel_links')
         return self.cursor.fetchall()
     
+    def get_spreadsheet_id_for_channel(self, channel):
+        self.cursor.execute('SELECT spreadsheet_id FROM channel_links WHERE channel = ?', (channel,))
+        result = self.cursor.fetchone()
+        return result[0] if result else None
+
     def close(self):
         self.conn.close()
