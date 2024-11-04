@@ -15,53 +15,25 @@ class DatabaseManager:
 
     def _create_tables(self):
         self.cursor.execute('''
-        CREATE TABLE IF NOT EXISTS invite_stats (
+        CREATE TABLE IF NOT EXISTS invite_stats_new (
             invite_link TEXT,
             user_id INTEGER,
             username TEXT,
             name TEXT,
-            phone_number TEXT,
             channel TEXT,
+            link_createt TEXT,
             time TEXT  -- New column to store the timestamp
         )
         ''')
-        self.cursor.execute('''
-        CREATE TABLE IF NOT EXISTS channel_links (
-            channel TEXT,
-            invite_link TEXT,
-            spreadsheet_id TEXT,
-            UNIQUE(channel, invite_link)
-        )
-        ''')
         self.conn.commit()
 
-    def save_invite(self, invite_link, user_id, username, name, phone_number, channel):
+    def save_invite(self, invite_link, user_id, username, name, channel, link_created):
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.cursor.execute('''
-        INSERT INTO invite_stats (invite_link, user_id, username, name, phone_number, channel, time)
+        INSERT INTO invite_stats_new (invite_link, user_id, username, name, channel, link_createt, time)
         VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (invite_link, user_id, username, name, phone_number, channel, current_time))
+        ''', (invite_link, user_id, username, name, channel, link_created, current_time))
         self.conn.commit()
-
-    def get_invite_stats(self):
-        self.cursor.execute('SELECT channel, invite_link, COUNT(user_id) FROM invite_stats GROUP BY channel, invite_link')
-        return self.cursor.fetchall()
-
-    def save_channel_link(self, channel, invite_link, spreadsheet_id):
-        self.cursor.execute('''
-        INSERT OR IGNORE INTO channel_links (channel, invite_link, spreadsheet_id)
-        VALUES (?, ?, ?)
-        ''', (channel, invite_link, spreadsheet_id))
-        self.conn.commit()
-
-    def get_channel_links(self):
-        self.cursor.execute('SELECT channel, invite_link, spreadsheet_id FROM channel_links')
-        return self.cursor.fetchall()
-    
-    def get_spreadsheet_id_for_channel(self, channel):
-        self.cursor.execute('SELECT spreadsheet_id FROM channel_links WHERE channel = ?', (channel,))
-        result = self.cursor.fetchone()
-        return result[0] if result else None
 
     def close(self):
         self.conn.close()
