@@ -35,7 +35,7 @@ async def on_join_request(join_request: types.ChatJoinRequest):
     db_manager.save_invite(invite_link, user.id, user.username, user.full_name, channel, link_createt)
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     sheets_exporter.append_data(
-        SPREADSHEET_ID, f'юзеры!A2', [[user.id, user.username, user.full_name, current_time, invite_link, channel, link_createt]]
+        SPREADSHEET_ID, f'юзеры!A2', [[user.id, user.username, user.full_name, current_time, invite_link, channel]]
     )
 
 if __name__ == "__main__":
